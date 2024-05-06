@@ -10,20 +10,20 @@ import moment from 'moment-timezone';
 global.botnumber = ""
 //يمكنك إضافة رقمك للتحكم في البوت أو إن طلب شخص رقمك من البوت
 global.owner = [
-  ['212670941551', 'Omar', true],
+  ['212670537559', 'ossama', true],
   
 ];
 
-global.suittag = ['212670941551'];
-global.prems = ['212670941551'];
+global.suittag = ['212670537559'];
+global.prems = ['212670537559'];
 
-global.packname = 'JITOSSA';
+global.packname = 'C H T 2';
 global.author = '';
-global.wm = 'OMAR';
-global.titulowm = 'JITOSSA';
-global.titulowm2 = `JITOSSA`
-global.igfg = 'JITOSSA';
-global.wait = '> _جاري معالجة طلبك حاول الإنتظار ..._\n\n *متابعة للمطور في إنستجرام* \n*_instagram.com/ovmar_1_*';
+global.wm = 'C H T 2';
+global.titulowm = 'C H T 2';
+global.titulowm2 = `C H T 2`
+global.igfg = 'C H T 2';
+global.wait = '> _جاري معالجة طلبك حاول الإنتظار ..._\n\n *';
 global.waitt = '> سوف أجيب عن سؤالك بعد قليل ...';
 global.waittt = '> سوف يتم رسم صورتك بعد قليل ...';
 global.rwait = '⏳';
