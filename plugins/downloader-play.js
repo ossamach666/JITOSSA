@@ -1,57 +1,80 @@
-import yts from 'yt-search'
-import { youtubedl, youtubedlv2 } from '@bochilteam/scraper-sosmed'
-let handler = async (m, { conn, command, text, usedPrefix }) => {
-  if (!text) throw ` مثال :\n*.song* sami yusuf`
-  let res = await yts(text)
-  let vid = res.videos[0]
-  await conn.sendMessage(m.chat, { react: { text: "⏳",key: m.key,}
-  })  
-  if (!vid) throw 'لم يتم العثور عليه، حاول عكس العنوان والمؤلف'
-  let { title, description, thumbnail, videoId, durationH, viewH, publishedTime } = vid
-  const url = 'https://www.youtube.com/watch?v=' + videoId
-let vap = `*〔 Y O U T U B E P L A Y 〕*
+import ytdl from 'ytdl-core';
+import yts from 'yt-search';
+import fs from 'fs';
+import { pipeline } from 'stream';
+import { promisify } from 'util';
+import os from 'os';
 
-*عنوان المقطع:* ${title}
-*رابط المقطع:* ${url}
-*وصف المقطع:* ${description}
-*تاريخ نشره:* ${publishedTime}
-*مدته:* ${durationH}
-*عدد المشاهدات:* ${viewH}`
+const streamPipeline = promisify(pipeline);
 
-conn.sendMessage(m.chat, {
-text: vap,
-contextInfo: {
-externalAdReply: {
-title: vap,
-thumbnailUrl: thumbnail,
-mediaType: 1,
-renderLargerThumbnail: true
-}}}, { quoted: m}) 
-  const yt = await youtubedl(url).catch(async () => await youtubedlv2(url))
-const link = await yt.audio['128kbps'].download()
-  let doc = { 
-  audio: 
-  { 
-    url: link 
-}, 
-mimetype: 'audio/mp4', fileName: `${title}`, contextInfo: { externalAdReply: { showAdAttribution: true,
-mediaType:  2,
-mediaUrl: url,
-title: title,
-body: "© JITOSSA",
-sourceUrl: url,
-thumbnail: await(await conn.getFile(thumbnail)).data                                                                     
-                                                                                                                 }
-                       }
-  }
-  return conn.sendMessage(m.chat, doc, { quoted: m })
-}
-handler.help = ['song']
-handler.tags = ['downloader']
-handler.command = /^song|play$/i
+var handler = async (m, { conn, command, text, usedPrefix }) => {
+  if (!text) throw `لـ تحميل الأغاني الجميلة والعريقة اليك هاذا الأمر \n\n مثـال:\n ${usedPrefix}${command} kandrick lamar euphoria`;
+  await m.react(rwait);
 
-export default handler
+  let search = await yts(text);
+  let vid = search.videos[Math.floor(Math.random() * search.videos.length)];
+  if (!search) throw 'لم يتم إيجاد أي شئ بهاذا العنوان';
+  let { title, thumbnail, timestamp, views, ago, url } = vid;
+  let wm = ' ثم التحميل بنجاح';
 
-function pickRandom(list) {
-  return list[Math.floor(list.length * Math.random())]
-}
+  let captvid = `
+  ❏ Title: ${title}
+  ❐ Duration: ${timestamp}
+  ❑ Views: ${views}
+  ❒ Upload: ${ago}
+  ❒ Link: ${url}
+> ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴊɪᴛᴏssᴀ ᴍᴜsɪᴄ`;
+
+  conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: captvid, footer: author }, { quoted: m });
+
+
+  const audioStream = ytdl(url, {
+    filter: 'audioonly',
+    quality: 'highestaudio',
+  });
+
+  // Get the path to the system's temporary directory
+  const tmpDir = os.tmpdir();
+
+  // Create writable stream in the temporary directory
+  const writableStream = fs.createWriteStream(`${title}.mp3`);
+
+  // Start the download
+  await streamPipeline(audioStream, writableStream);
+
+  let doc = {
+    audio: {
+      url: `${title}.mp3`
+    },
+    mimetype: 'audio/mp4',
+    fileName: `${title}`,
+    contextInfo: {
+      externalAdReply: {
+        showAdAttribution: false,
+        mediaType: '',
+        mediaUrl: '',
+        title: '',
+        body: '',
+        sourceUrl: '',
+        thumbnail: await (await conn.getFile(thumbnail)).data
+      }
+    }
+  };
+
+  await conn.sendMessage(m.chat, doc, { quoted: m });
+
+  // Delete the audio file
+  fs.unlink(`${tmpDir}/${title}.mp3`, (err) => {
+    if (err) {
+      console.error(`حدث خطأ أسفة: ${err}`);
+    } else {
+      console.log(`ثم حدف الأغنية: ${tmpDir}/${title}.mp3`);
+    }
+  });
+};
+
+handler.help = ['play'].map((v) => v + ' <query>');
+handler.tags = ['downloader'];
+handler.command = /^play|song$/i;
+handler.diamond = false
+export default handler;

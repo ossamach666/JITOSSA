@@ -26,10 +26,10 @@ const handler = async (m, { conn, usedPrefix, command, text }) => {
       contextInfo: {
         externalAdReply: {
           title: data.name,
-          body: 'جاري تحميل التطبيق',
-          sourceUrl: 'https://whatsapp.com/channel/0029Vae6G0o29752QfcvFl2B',
-          thumbnailUrl: iconUrl, // رابط أيقونة التطبيق هنا
-          mediaType: 1, // نوع المشاركة: صورة
+          body: 'إضغط للمتابعة على إنستجرام',
+          sourceUrl: 'https://www.instagram.com/ovmar_1?igsh=bHFxbnl5ZmVyaGN0',
+          thumbnailUrl: iconUrl, // icon application 
+          mediaType: 1, // matbdl walo
           showAdAttribution: true,
           renderLargerThumbnail: true
         }

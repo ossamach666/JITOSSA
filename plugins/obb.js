@@ -1,4 +1,6 @@
-import fetch from 'node-fetch'
+//didn't work
+
+/*import fetch from 'node-fetch'
 
 let handler = async (m, { conn, args, text , usedPrefix, command }) => {
     if (!args[0]) throw '*_قم بتنزيل اللعبة التي تريد عن طريق .APK بعدها قم بطلب ال obb الخاص بها بهاذا الأمر_*\n\n ${usedPrefix + command}  free fire
@@ -25,4 +27,4 @@ async function apk(url) {
         throw 'File size exceeds 1.5 gigabyte.'
     let mimetype = response.headers.get('content-type')
     return { fileName, mimetype, download}
-}
+}*/
