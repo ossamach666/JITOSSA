@@ -8,7 +8,7 @@
 /* [❗]                      [❗]                      [❗] */
 /* -------------------------------------------------------*/
 
-import { googleImage } from '@bochilteam/scraper';
+/*import { googleImage } from '@bochilteam/scraper';
 import sharp from 'sharp';
 import fetch from 'node-fetch';
 
@@ -55,4 +55,4 @@ handler.help = ['gimage < query >', 'image < query >'];
 handler.tags = ['search'];
 handler.command = /^(gimage|image|googleimage|googleimg|gimg)$/i;
 
-export default handler;
+export default handler;*/

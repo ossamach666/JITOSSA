@@ -1,40 +1,15 @@
-import fetch from 'node-fetch';
+import Gemini from "gemini-ai"
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
-  try {
-    
-    if (!text) {
-      return conn.reply(m.chat, `*مرحبا أنا Gemini*\n *كيف يمكنني مساعدتك في أي شئ مثال*\n\n .gemini ماهيا لغة JavaScript`, m);
-    }
-      
-    await m.reply(wait)
-
-    const response = await fetch(`https://aemt.me/gemini?text=${encodeURIComponent(text)}`);
-    if (!response.ok) {
-      return conn.reply(m.chat, 'أسفة هل تقدر على صياغة السؤال مجددا', m);
-    }
-
-    const data = await response.json();
-    const result = data.result;
-
-    if (!result) {
-      return conn.reply(m.chat, 'أسفة حدث خطأ في تنفيد طلبك حاول لاحقا .', m);
-    }
-
-    conn.reply(m.chat, result, m);
-  } catch (error) {
-    
-    throw eror
-  }
-};
-
-handler.help = ['gemini'];
+let handler = async (m, { conn, args }) => {
+  const text = args.join` `;
+  if (!text) return conn.reply(m.chat, '*معك Gemini الذكاء الاصطناعي من شركة غوغل* يمكنك استخدامي عبر كتابة مثلا هكذا :\n\n*.gemini* من هو ابن القيم', m);
+const gemini = new Gemini("AIzaSyCDr8qgyPDmr47zKPT8oegKZPTGEki-Lyw") //GET APIKEY IN HERE https://makersuite.google.com/app/apikey
+         const chat = gemini.createChat();
+         let a = await chat.ask(text)
+    console.log(a);
+    conn.reply(m.chat, a, m)
+} 
+handler.help = ['gemini']
 handler.tags = ['ai'];
-handler.limit = false;
-handler.register = false;
-
-handler.command = /^(gemini)$/i;
-
+handler.command = /^gemini?$/i;
 export default handler;
-
-// Ni plugens

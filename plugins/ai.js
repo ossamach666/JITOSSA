@@ -1,1 +1,52 @@
-/*function _0x9047(_0x4b860c,_0x547d07){const _0x418034=_0x4180();return _0x9047=function(_0x90478e,_0x212438){_0x90478e=_0x90478e-0x1e0;let _0x1ffd21=_0x418034[_0x90478e];return _0x1ffd21;},_0x9047(_0x4b860c,_0x547d07);}const _0x9d651c=_0x9047;function _0x4180(){const _0x444590=['5456118GhfLuj','limit','2691372WsmCnB','result','command','6684064TyhzFY','tags','تحدث\x20مع\x20الذكاء\x20الإصطناعي\x20بواصطة\x20هاذا\x20الأمر\x20\x0a\x0a\x20.ai\x20عاصمة\x20المغرب\x20؟','5595dDupFi','302JwMflK','15ejBEIb','json','10325196NgVjLU','13063090xYxEBm','1976404HcpmGq','9MCEWLP'];_0x4180=function(){return _0x444590;};return _0x4180();}(function(_0x21457d,_0xfdddf1){const _0xf1767d=_0x9047,_0xb0d9d1=_0x21457d();while(!![]){try{const _0x1901bf=parseInt(_0xf1767d(0x1e6))/0x1*(-parseInt(_0xf1767d(0x1e7))/0x2)+-parseInt(_0xf1767d(0x1e0))/0x3+parseInt(_0xf1767d(0x1ec))/0x4*(parseInt(_0xf1767d(0x1e8))/0x5)+-parseInt(_0xf1767d(0x1ee))/0x6+parseInt(_0xf1767d(0x1ea))/0x7+-parseInt(_0xf1767d(0x1e3))/0x8*(parseInt(_0xf1767d(0x1ed))/0x9)+parseInt(_0xf1767d(0x1eb))/0xa;if(_0x1901bf===_0xfdddf1)break;else _0xb0d9d1['push'](_0xb0d9d1['shift']());}catch(_0x15d3df){_0xb0d9d1['push'](_0xb0d9d1['shift']());}}}(_0x4180,0xbda6a));import _0x5c0488 from'node-fetch';let handler=async(_0x2846ff,{conn:_0x3ed10e,usedPrefix:_0xd48ea4,command:_0x5d718b,text:_0x22de73})=>{const _0x44fdc2=_0x9047;if(!_0x22de73)throw _0x44fdc2(0x1e5);let _0x59287e=await _0x5c0488('https://aemt.me/openai?text='+_0x22de73),_0x1459e6=await _0x59287e[_0x44fdc2(0x1e9)]();_0x2846ff['reply'](_0x1459e6[_0x44fdc2(0x1e1)]);};handler['help']=['ai'],handler[_0x9d651c(0x1e4)]=['ai'],handler[_0x9d651c(0x1e2)]=/^(ai|openai|gpt)$/i,handler[_0x9d651c(0x1ef)]=![];export default handler;*/
+import fetch from 'node-fetch';
+
+let handler = async (m, { text, conn, usedPrefix, command }) => {
+  if (!text && !(m.quoted && m.quoted.text)) {
+    throw `التحدث مع openai يمكنك الأن بهاذا الأمر التحدث واكتب أي سؤال \n\n مثـال :ظ\n. ai اين يوجد المغرب.`;
+  }
+
+  if (!text && m.quoted && m.quoted.text) {
+    text = m.quoted.text;
+  }
+
+  try {
+    const prompt = encodeURIComponent(text);
+
+    const jitossa1 = `${jitossabot}/chatgpt?text=${prompt}`;
+
+    try {
+      let response = await fetch(jitossa1);
+      let data = await response.json();
+      let result = data.result;
+
+      if (!result) {
+        throw new Error('No valid JSON response from the first API');
+      }
+
+      await conn.sendMessage(m.chat, { text: result }, { quoted: m });
+    } catch (error) {
+      console.error('Error from the first API:', error);
+
+      const model = 'llama';
+      const senderNumber = m.sender.replace(/[^0-9]/g, ''); 
+      const session = `JITOSSA_BOT_${senderNumber}`;
+      const jitossa2 = `https://ultimetron.guruapi.tech/gpt3?prompt=${prompt}`;
+
+      let response = await fetch(jitossa2);
+      let data = await response.json();
+      let result = data.completion;
+
+      await conn.sendMessage(m.chat, { text: result }, { quoted: m });
+    }
+
+  } catch (error) {
+    console.error('Error:', error);
+    throw `*ERROR*`;
+  }
+};
+
+handler.help = ['chatgpt'];
+handler.tags = ['AI'];
+handler.command = ['bro', 'chatgpt', 'ai', 'gpt'];
+
+export default handler;

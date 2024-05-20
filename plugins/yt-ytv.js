@@ -1,37 +1,66 @@
-import fetch from 'node-fetch';
+import ytdl from 'ytdl-core';
+import fs from 'fs';
+import os from 'os';
 
-let handler = async (m, { conn, args, command, usedPrefix }) => {
-    try {
-        if (!args[0]) throw `*تحميـل الفيديوهـات من  YouTube*\nمثـال: ${usedPrefix + command} https://www.youtube.com/watch?v=UUfVNNrihNs`;
+let limit = 500;
+let handler = async (m, { conn, args, isPrems, isOwner, usedPrefix, command }) => {
+  if (!args || !args[0]) throw `التحميـل الفيديوهـات من يـوتوب \n\n مثـال :\n${usedPrefix + command} https://youtu.be/Xb1-Oh1_msQ`;
+  if (!args[0].match(/youtu/gi)) throw `تأكد من أن الرابط موجود على YouTube`;
 
-        const pattern = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-        const match = args[0].match(pattern);
-        if (!match) throw 'رابط YouTube غير صالح';
-        const videoId = match[1];
-        
-        await conn.reply(m.chat, `جاري جلب الفيديو بأعلى جودة...\n${wait}`, m);
-
-        const url = 'https://aemt.me/' + encodeURIComponent(videoId) + '.mp4?filter=&quality=high&contenttype=video/mp4';
-
-        const response = await fetch(url, {
-            headers: {
-                'Connection': 'keep-alive',
-            }
-        });
-
-        if (!response.ok) throw 'فشل جلب الفيديو';
-
-        const buffer = await response.buffer();
-        
-        await conn.sendFile(m.chat, buffer, `${videoId}_الجودة_العالية.mp4`, `فيديو بأعلى جودة \n \n ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴊɪᴛᴏssᴀ`, m);
-    } catch (error) {
-        console.error('خطأ في الجلب:', error);
-        conn.reply(m.chat, error, m);
+  let chat = global.db.data.chats[m.chat];
+  m.react(rwait);
+  try {
+    const info = await ytdl.getInfo(args[0]);
+    const format = ytdl.chooseFormat(info.formats, { quality: 'highest' });
+    if (!format) {
+      throw new Error('لم يتم العثور على صيغ صالحة');
     }
+
+    if (format.contentLength / (1024 * 1024) >= limit) {
+      return m.reply(`≡ *ABHU YTDL*\n\n▢ *⚖️الحجم*: ${format.contentLength / (1024 * 1024).toFixed(2)}MB\n▢ *🎞️الجودة*: ${format.qualityLabel}\n\n▢ الملف يتجاوز الحد المسموح *+${limit} MB*`);
+    }
+
+    const tmpDir = os.tmpdir();
+    const fileName = `${tmpDir}/${info.videoDetails.videoId}.mp4`;
+
+    const writableStream = fs.createWriteStream(fileName);
+    ytdl(args[0], {
+      quality: format.itag,
+    }).pipe(writableStream);
+
+    writableStream.on('finish', () => {
+      conn.sendFile(
+        m.chat,
+        fs.readFileSync(fileName),
+        `${info.videoDetails.videoId}.mp4`,
+        ` 
+	  ⬡ العنوان: ${info.videoDetails.title}
+	  ⬡ المدة: ${info.videoDetails.lengthSeconds} ثانية
+	  ⬡ المشاهدات: ${info.videoDetails.viewCount}
+	  ⬡ التحميل: ${info.videoDetails.publishDate}
+	\n > inatagram.com/ovmar_1`,
+        m,
+        false,
+        { asDocument: chat.useDocument }
+      );
+
+      fs.unlinkSync(fileName); // حذف الملف المؤقت
+      m.react(done);
+    });
+
+    writableStream.on('error', (error) => {
+      console.error(error);
+      m.reply('*حدث خطأ أثناء محاولة تنزيل الفيديو. يرجى المحاولة مرة أخرى.*');
+    });
+  } catch (error) {
+    console.error(er>ror);
+    m.reply('*حدث خطأ أثناء معالجة الفيديو. يرجى المحاولة مرة أخرى.*');
+  }
 };
 
-handler.command = /^(getvid|ytmp4|youtubemp4|ytv|youtubevideo)$/i;
-handler.help = ['ytmp4 <رابطYT>', 'youtubemp4 <رابطYT>'];
-handler.tags = ['downloader'];
+handler.help = ['ytmp4 <رابط-يوتيوب>'];
+handler.tags = ['downloadet'];
+handler.command = ['ytmp4', 'ytv'];
+handler.diamond = false;
 
 export default handler;
