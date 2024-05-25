@@ -1,4 +1,3 @@
-
 import ytdl from 'ytdl-core'
 import fs from 'fs'
 import search from 'yt-search'
@@ -6,7 +5,7 @@ import search from 'yt-search'
 let sentVideos = [];
 
 let handler = async (m, { conn, text }) => {
-  if (!text) return m.reply('*بحـث وتحميـل الفيديوهـات تلقائيـا* \n\n *مثـال* \n .video goku ');
+  if (!text) return m.reply('*البحث وتحميل الفيديوهات تلقائيًا*\n\n*مثال*\n.video goku');
 
   conn.sendMessage(m.chat, {
     react: {
@@ -30,7 +29,7 @@ let handler = async (m, { conn, text }) => {
         }
       }
       if (!newVideoId) {
-        return m.reply('*Tidak Ditemukan*');
+        return m.reply('*لم يتم العثور على الفيديو*');
       }
       videoId = newVideoId;
       info = await ytdl.getInfo(videoId);
@@ -43,10 +42,10 @@ let handler = async (m, { conn, text }) => {
     let fileSize = 0;
     video.on('data', (chunk) => {
       fileSize += chunk.length;
-      if (fileSize > 50 * 1024 * 1024) {
+      if (fileSize > 500 * 1024 * 1024) {
         video.destroy();
         fs.unlinkSync(`${title}.mp4`);
-        m.reply('*Ukuran Video Melewati Batas*');
+        m.reply('*حجم الفيديو يتجاوز الحد المسموح به*');
       }
     });
 
@@ -62,13 +61,13 @@ let handler = async (m, { conn, text }) => {
     });
   } catch (e) {
     console.log(e);
-    m.reply(`Error: *${e.message}*`);
+    m.reply(`خطأ: *${e.message}*`);
   }
 };
 
 handler.help = ['video'];
 handler.tags = ['downloader'];
 handler.command = /^video$/i;
-handler.register = false
-handler.limit = 1
-export default handler
+handler.register = false;
+handler.limit = false;
+export default handler;
